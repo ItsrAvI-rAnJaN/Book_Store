@@ -14,7 +14,6 @@ class LoginSerializer(serializers.Serializer):
         return user
 
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

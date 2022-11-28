@@ -11,7 +11,7 @@ from book.serialization import BookSerializer, AllBookSerializer
 class BookAPI(APIView):
     def post(self, request):
         try:
-            serializer = BookSerializer(data=request.data)
+            serializer = AllBookSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response({"message": "Book added", "data": serializer.data}, status=status.HTTP_201_CREATED)
@@ -31,7 +31,7 @@ class BookAPI(APIView):
     def put(self, request):
         try:
             book_object = Book.objects.get(id=request.data.get("id"))
-            serializer = BookSerializer(book_object, data=request.data)
+            serializer = AllBookSerializer(book_object, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response({"message": "Update successful", "data": serializer.data}, status=status.HTTP_201_CREATED)
