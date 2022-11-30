@@ -48,7 +48,6 @@ class VerifyToken(APIView):
             user = User.objects.get(username=decoded.get("username"))
             if not user:
                 raise Exception("Invalid user")
-            user.is_verified = True
             user.save()
             return Response("Token verified")
         except Exception as e:

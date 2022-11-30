@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user',
     "rest_framework",
-    "book"
+    "book",
+    "cart",
+    "drf_yasg"
 ]
 
 MIDDLEWARE = [
@@ -127,3 +129,14 @@ JWT_EXP = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
 
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Token',
+            'in': 'header'
+        }
+    }
+}

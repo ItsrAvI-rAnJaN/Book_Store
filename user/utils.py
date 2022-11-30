@@ -35,7 +35,6 @@ def verify_token(function):
     def wrapper(self, request, *args, **kwargs):
 
         token = request.headers.get("Token")
-        print(token)
         if not token:
             return Response({"Message": "Token not found"}, status=400)
         decoded = JWT().decode(token)
@@ -44,11 +43,9 @@ def verify_token(function):
         user = User.objects.filter(id=decoded.get("user_id")).first()
         if not user:
             return Response({"Message": "Invalid user"}, status=400)
-        if not user.is_verified:
-            return Response({"Message": "User not verified"}, status=400)
-        request.data.update({"user": user.get("user_id")})
-
-        return function(self, request, *args, **kwargs)
+        request.data.update({"user": user.id})
+        var = function(self, request, *args, **kwargs)
+        return var
 
     return wrapper
 
