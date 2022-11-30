@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from user.models import User
 from .models import Book
+from drf_yasg import  openapi
 
 
 class AllBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['id', 'author', 'title', 'price', 'quantity', 'user']
+        fields = ['id', 'author', 'title', 'price', 'quantity']
+        swagger_schema_fields = {"required": ["title", "author","price","quantity","user"], "type": openapi.TYPE_OBJECT}
 
 
 class BookSerializer(serializers.ModelSerializer):

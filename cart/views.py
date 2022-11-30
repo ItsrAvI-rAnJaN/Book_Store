@@ -1,11 +1,10 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from cart.models import Cart
 from cart.serializers import CartSerializer
-
 import logging
+from drf_yasg.utils import swagger_auto_schema
 
 from user.utils import verify_token
 
@@ -16,6 +15,7 @@ logging.basicConfig(filename="cart.log",
 
 
 class CartAPI(APIView):
+    @swagger_auto_schema(request_body=CartSerializer, responses={201: 'Created', 400: 'BAD REQUEST'})
     @verify_token
     def post(self, request):
         """
@@ -31,6 +31,7 @@ class CartAPI(APIView):
             logging.error(e)
             return Response({'message': str(e), 'status': 400}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema()
     @verify_token
     def get(self, request):
         """
@@ -44,6 +45,7 @@ class CartAPI(APIView):
             logging.error(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(request_body=CartSerializer, responses={204: 'Deleted', 400: 'BAD REQUEST'})
     @verify_token
     def delete(self, request, id):
         """

@@ -6,9 +6,12 @@ from .models import User
 from .serializers import LoginSerializer, RegisterSerializer
 from .utils import JWT
 from user.task import send_user_email_task
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class Register(APIView):
+    @swagger_auto_schema(request_body=RegisterSerializer, responses={201: 'CREATED', 400: 'BAD REQUEST'})
     def post(self, request):
         try:
             serializer = RegisterSerializer(data=request.data)
@@ -25,6 +28,13 @@ class Register(APIView):
 
 
 class Login(APIView):
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'username': openapi.Schema(type=openapi.TYPE_STRING),
+            'password': openapi.Schema(type=openapi.TYPE_STRING)
+        }),
+        responses={202: 'ACCEPTED', 400: 'BAD REQUEST'})
     def post(self, request):
         """
          for logging of the user

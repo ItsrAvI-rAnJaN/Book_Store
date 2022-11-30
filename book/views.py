@@ -5,9 +5,13 @@ from rest_framework.views import APIView
 from book.models import Book
 from book.serialization import AllBookSerializer
 from user.utils import verify_superuser
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 class BookAPI(APIView):
+    @swagger_auto_schema(request_body=AllBookSerializer,
+                         responses={201: 'CREATED', 400: 'BAD REQUEST'})
     @verify_superuser
     def post(self, request):
         try:
@@ -19,6 +23,7 @@ class BookAPI(APIView):
             logging.exception(err)
             return Response({"message": str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema()
     def get(self, request):
         try:
             book_list = Book.objects.all()
@@ -28,6 +33,16 @@ class BookAPI(APIView):
             logging.exception(err)
             return Response({"message": str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER),
+            'title': openapi.Schema(type=openapi.TYPE_STRING),
+            'author': openapi.Schema(type=openapi.TYPE_STRING),
+            'price': openapi.Schema(type=openapi.TYPE_INTEGER),
+            "quantity": openapi.Schema(type=openapi.TYPE_INTEGER),
+        }),
+        responses={201: "ok", 400: "BAD REQUEST"})
     @verify_superuser
     def put(self, request):
         try:
@@ -40,6 +55,12 @@ class BookAPI(APIView):
             logging.exception(err)
             return Response({"message": str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': openapi.Schema(type=openapi.TYPE_INTEGER)
+        }),
+        responses={200: 'OK', 400: 'BAD REQUEST'})
     @verify_superuser
     def delete(self, request):
         try:
