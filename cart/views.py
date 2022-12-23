@@ -5,8 +5,8 @@ from cart.models import Cart
 from cart.serializers import CartSerializer
 import logging
 from drf_yasg.utils import swagger_auto_schema
-
 from user.utils import verify_token
+from cart.cart_redis import RedisCart
 
 logging.basicConfig(filename="cart.log",
                     filemode='a',
@@ -25,7 +25,8 @@ class CartAPI(APIView):
             serializer = CartSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response({'message': 'Cart Created Successfully', 'data': serializer.data},
+            created_data = RedisCart().add_cart(request.data.get("user"), serializer.data)
+            return Response({'message': 'Cart Created Successfully', 'data': created_data},
                             status=status.HTTP_201_CREATED)
         except Exception as e:
             logging.error(e)
@@ -38,9 +39,10 @@ class CartAPI(APIView):
         Function for get carts
         """
         try:
-            item_list = Cart.objects.filter(user=request.data.get('user'))
-            serializer = CartSerializer(item_list, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            # item_list = Cart.objects.filter(user=request.data.get('user'))
+            # serializer = CartSerializer(item_list, many=True)
+            get_data = RedisCart().get_cart(user=request.data.get("user"))
+            return Response({"message": "Data retrieved", "redis_data": get_data}, status=status.HTTP_200_OK)
         except Exception as e:
             logging.error(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -54,6 +56,7 @@ class CartAPI(APIView):
         try:
             cart = Cart.objects.get(id=id)
             cart.delete()
+            RedisCart().delete_cart(request.data.get("id"))
             return Response({"Message": "Cart Deleted Successfully", "status": 204})
         except Exception as err:
             logging.error(err)
